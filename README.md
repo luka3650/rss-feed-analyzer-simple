@@ -7,7 +7,7 @@ Your application should be able to read array of strings (at least two RSS URLs)
 
 ### Workflow:
 When the RSS URLs are provided through command line entry, your code should do a HTTP request to fetch the RSS feeds.
-Your code should then analyse the entries in this feeds and find potential hot topics --> are there any overlaps between the news.
+Your code should then analyse the entries in these feeds and find potential hot topics --> are there any overlaps between the news.
 
 ### Example:
 RSS Feed one contains following news:
