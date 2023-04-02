@@ -15,11 +15,10 @@ import com.sun.syndication.io.XmlReader;
 
 public class RSSReader {
 
-    public static final String REGEX_REMOVE_SIGNS = "[,':]";
-    public static final String SPLIT_REGEX = " ";
+    private static final String REGEX_REMOVE_SIGNS = "[,':]";
+    private static final String SPLIT_REGEX = " ";
 
     public List<RSSFeed> readRss(String[] urlArray, List<String> stopWords) throws IOException, FeedException {
-
 
         // List of RSS feed objects
         List<RSSFeed> rssFeedList = new ArrayList<>();
@@ -34,9 +33,10 @@ public class RSSReader {
             for (Object o : feed.getEntries()) {
                 SyndEntry syndEntry = (SyndEntry) o;
 
-                // add original title in our rss feed titles list
+                // Add original title in our rss feed titles list
                 rssFeed.listOfNewsTitles.add(syndEntry.getTitle());
-                // add parsed title inpur rss feed parsed titles list
+
+                // Add parsed title inpur rss feed parsed titles list
                 List<String> parsedTitle = Stream.of(syndEntry.getTitle().toLowerCase()
                                 .replaceAll(REGEX_REMOVE_SIGNS, "")
                                 .split(SPLIT_REGEX))
@@ -50,8 +50,6 @@ public class RSSReader {
         }
 
         return rssFeedList;
-
-
 
     }
 

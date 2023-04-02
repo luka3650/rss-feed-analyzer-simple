@@ -1,6 +1,5 @@
 package com.luka.hottopics;
 
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.lang.String;
