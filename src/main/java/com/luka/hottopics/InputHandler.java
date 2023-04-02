@@ -1,6 +1,7 @@
 package com.luka.hottopics;
 
 import com.sun.syndication.io.FeedException;
+
 import java.io.IOException;
 import java.util.Scanner;
 
@@ -11,12 +12,13 @@ public class InputHandler {
     public static final Integer URL_MIN_NUM = 2;
 
 
-
     public static void main(String[] args) throws InputException, IOException, FeedException {
 
         InputHandler inputHandler = new InputHandler();
         RSSReader rssReader = new RSSReader();
         LoadResources loadResources = new LoadResources();
+        FindHotTopics findHotTopics = new FindHotTopics();
+
 
         // Process input from console
         var urlArray = inputHandler.processInput();
@@ -25,8 +27,13 @@ public class InputHandler {
         var stopWords = loadResources.loadStopWords();
 
         // Read RSS feeds and parse for hot topics
-        rssReader.readRss(urlArray, stopWords);
+        var rssFeedList = rssReader.readRss(urlArray, stopWords);
 
+        // Call method to count key-words appearances in an RSS feed
+        for (var rssFeed : rssFeedList) {
+            findHotTopics.countWordsInTitles(rssFeed.listOfParsedTitles, rssFeed.wordCountMap);
+        }
+        findHotTopics.findHotTopics(rssFeedList);
 
 
     }
@@ -47,7 +54,6 @@ public class InputHandler {
 
         return urlArray;
     }
-
 
 
 }

@@ -8,14 +8,14 @@ import java.util.List;
 
 public class RSSFeed {
 
-    public List<List<String>> listOfTitles;
+    public List<List<String>> listOfParsedTitles;
     public HashMap<String, Integer> wordCountMap;
-    public String rssFeedUrl;
+    public List<String> listOfNewsTitles;
 
-    RSSFeed(String source) {
-        listOfTitles = new ArrayList<>();
+    RSSFeed() {
+        listOfParsedTitles = new ArrayList<>();
+        listOfNewsTitles = new ArrayList<>();
         wordCountMap = new HashMap<>();
-        rssFeedUrl = source;
     }
 
 }
