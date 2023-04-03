@@ -15,8 +15,8 @@ import com.sun.syndication.io.XmlReader;
 
 public class RSSReader {
 
-    private static final String REGEX_REMOVE_SIGNS = "[,':]";
-    private static final String SPLIT_REGEX = " ";
+    private static final String REGEX_REMOVE_SIGNS = "[;,:\\d.$?!%]";
+    private static final String SPLIT_REGEX = "\\s+";
 
     public List<RSSFeed> readRss(String[] urlArray, List<String> stopWords) throws IOException, FeedException {
 
@@ -36,14 +36,18 @@ public class RSSReader {
                 // Add original title in our rss feed titles list
                 rssFeed.listOfNewsTitles.add(syndEntry.getTitle());
 
-                // Add parsed title inpur rss feed parsed titles list
+                // Parse and clean up feed titles, store words into a list
                 List<String> parsedTitle = Stream.of(syndEntry.getTitle().toLowerCase()
-                                .replaceAll(REGEX_REMOVE_SIGNS, "")
+                                .replaceAll(REGEX_REMOVE_SIGNS, "").trim()
                                 .split(SPLIT_REGEX))
                         .collect(Collectors.toList());
+
+                // Remove all stop words (words that don't add important information)
                 parsedTitle.removeAll(stopWords);
                 rssFeed.listOfParsedTitles.add(parsedTitle);
             }
+
+
 
             // Fill our RSS feeds collection
             rssFeedList.add(rssFeed);

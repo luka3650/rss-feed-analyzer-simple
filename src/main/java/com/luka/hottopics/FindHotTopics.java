@@ -4,6 +4,7 @@ import com.sun.syndication.io.FeedException;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class FindHotTopics {
 
@@ -31,11 +32,12 @@ public class FindHotTopics {
         // Get a map of hot topics key-words and their number of appearances in given feeds
         Map<String, Integer> hotTopics = findHotTopics.findHotTopics(rssFeedList);
 
+
         // Get news titles related to hot topics
-        Map<String, List<String>> hotTopicsNews = findHotTopics.getRelatedNewsTitles(rssFeedList,hotTopics);
+        Map<String, List<String>> hotTopicsNews = findHotTopics.getRelatedNewsTitles(rssFeedList, hotTopics);
 
         // Print the results
-        OutputHandler.printResults(hotTopicsNews,hotTopics);
+        OutputHandler.printResults(hotTopicsNews, hotTopics);
 
     }
 
@@ -107,25 +109,24 @@ public class FindHotTopics {
         }
     }
 
-    private Map<String, List<String>> getRelatedNewsTitles(List<RSSFeed> rssFeedList, Map<String, Integer> hotTopics)
-    {
+    private Map<String, List<String>> getRelatedNewsTitles(List<RSSFeed> rssFeedList, Map<String, Integer> hotTopics) {
         Map<String, List<String>> hotTopicNewsTitles = new HashMap<>();
 
         // Map hot topics to news titles
-        for(RSSFeed rssFeed : rssFeedList)
-        {
+        for (RSSFeed rssFeed : rssFeedList) {
             rssFeed.listOfNewsTitles.forEach(title -> {
-                for(Map.Entry<String,Integer> entry : hotTopics.entrySet())
-                {
+                for (Map.Entry<String, Integer> entry : hotTopics.entrySet()) {
                     String key = entry.getKey();
                     String lowerCaseTitle = title.toLowerCase();
 
-                    // Check for hot topic in lower cased news title
-                    if(lowerCaseTitle.contains(key)) {
+                    // Split title string into a list and check if the hot topic is equal to any words in the title
+                    List<String> titleList = Arrays.stream(lowerCaseTitle.split(" ")).collect(Collectors.toList());
+                    boolean contains = titleList.stream().anyMatch(word -> word.equals(key));
+                    if (contains) {
                         List<String> list;
                         list = hotTopicNewsTitles.containsKey(key) ? hotTopicNewsTitles.get(key) : new ArrayList<>();
                         list.add(title);
-                        hotTopicNewsTitles.put(key,list);
+                        hotTopicNewsTitles.put(key, list);
                     }
                 }
             });
