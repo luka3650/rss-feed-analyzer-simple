@@ -32,12 +32,10 @@ public class FindHotTopics {
         Map<String, Integer> hotTopics = findHotTopics.findHotTopics(rssFeedList);
 
         // Get news titles related to hot topics
-        List<String> hotTopicsNews = findHotTopics.getRelatedNewsTitles(rssFeedList,hotTopics);
+        Map<String, List<String>> hotTopicsNews = findHotTopics.getRelatedNewsTitles(rssFeedList,hotTopics);
 
-        System.out.println("Hot Topics: ");
-        System.out.println(hotTopics);
-        System.out.println("Hot Topic related News: ");
-        System.out.println(hotTopicsNews);
+        // Print the results
+        OutputHandler.printResults(hotTopicsNews,hotTopics);
 
     }
 
@@ -68,6 +66,7 @@ public class FindHotTopics {
 
 
     private Map<String, Integer> hashMapUnion(List<RSSFeed> rssFeedList) {
+
         Map<String, Integer> combinedHashMap = new HashMap<>();
         for (RSSFeed rssFeed : rssFeedList) {
             for (Map.Entry<String, Integer> wordMap : rssFeed.wordCountMap.entrySet()) {
@@ -108,17 +107,26 @@ public class FindHotTopics {
         }
     }
 
-    private List<String> getRelatedNewsTitles(List<RSSFeed> rssFeedList, Map<String, Integer> hotTopics)
+    private Map<String, List<String>> getRelatedNewsTitles(List<RSSFeed> rssFeedList, Map<String, Integer> hotTopics)
     {
-        List<String> hotTopicNewsTitles = new ArrayList<>();
+        Map<String, List<String>> hotTopicNewsTitles = new HashMap<>();
+
+        // Map hot topics to news titles
         for(RSSFeed rssFeed : rssFeedList)
         {
             rssFeed.listOfNewsTitles.forEach(title -> {
                 for(Map.Entry<String,Integer> entry : hotTopics.entrySet())
                 {
                     String key = entry.getKey();
-                    if(title.contains(key))
-                        hotTopicNewsTitles.add(title);
+                    String lowerCaseTitle = title.toLowerCase();
+
+                    // Check for hot topic in lower cased news title
+                    if(lowerCaseTitle.contains(key)) {
+                        List<String> list;
+                        list = hotTopicNewsTitles.containsKey(key) ? hotTopicNewsTitles.get(key) : new ArrayList<>();
+                        list.add(title);
+                        hotTopicNewsTitles.put(key,list);
+                    }
                 }
             });
         }

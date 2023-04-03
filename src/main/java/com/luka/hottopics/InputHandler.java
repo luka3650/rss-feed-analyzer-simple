@@ -4,7 +4,7 @@ import java.util.Scanner;
 
 
 public class InputHandler {
-    public static final String SPLIT_REGEX = " ";
+    public static final String SPLIT_REGEX = "\\s+";
     public static final String INPUT_EXCEPTION_MESSAGE = "At least two RSS URL's should be given!";
     public static final Integer URL_MIN_NUM = 2;
 
