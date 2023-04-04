@@ -1,6 +1,6 @@
 # Application details
 
-A hot topic analyzer was implemented that takes in at least two RSS URL's as an input. The app fetches given RSS feeds via URL's using external **rome** library. Program parses the titles from the fetched feeds and clears them of [stopwords](https://www.ranks.nl/stopwords) to eliminate words that give little to no information. Strings were also cleaned from number digits and various interpunction signs. As a result the app writes out hot topics (words with most appearances that are present in all given feeds) along with the number of occurrences and associated title news with that topic.
+A hot topic analyzer was implemented that takes in at least two RSS URL's as an input. The app fetches given RSS feeds via URL's using external **rome** library. Program parses the titles from the fetched feeds and clears them of [stopwords](https://www.ranks.nl/stopwords) to eliminate words that give little to no information. Strings were also cleaned from digits and various interpunction signs. As a result the app writes out hot topics (words with most appearances that are present in all given feeds) along with the number of occurrences and associated title news with that topic.
 
 # Running the app
 
