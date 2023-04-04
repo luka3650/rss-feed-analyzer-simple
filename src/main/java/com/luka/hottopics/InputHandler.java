@@ -12,7 +12,7 @@ public class InputHandler {
     // Get input from terminal and store it
     public String[] processInput() throws InputException {
 
-        System.out.print("Enter RSS URL's separated with spaces: ");
+        System.out.print("Enter RSS URL's separated by spaces: ");
 
         // Read array of URL strings input
         Scanner scanner = new Scanner(System.in);

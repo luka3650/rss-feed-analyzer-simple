@@ -217,7 +217,7 @@ i'm 	i've 	ie 	if 	ignored
 immediate 	in 	inasmuch 	inc 	indeed
 indicate 	indicated 	indicates 	inner 	insofar
 instead 	into 	inward 	is 	isn't
-it 	it'd 	it'll 	it's 	its
+it 	it'd 	it'll 	it's  it’s its
 itself 	just 	keep 	keeps 	kept
 know 	known 	knows 	last 	lately
 later 	latter 	latterly 	least 	less

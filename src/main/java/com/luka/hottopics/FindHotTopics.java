@@ -20,25 +20,24 @@ public class FindHotTopics {
         // Process input from console
         String[] urlArray = inputHandler.processInput();
 
-        // Load stop words that needed for parsing the rss feed news topics
+        // Load stop words that are needed for parsing the RSS feed news topics
         List<String> stopWords = loadResources.loadStopWords();
 
-        // Read RSS feeds and parse for hot topics
+        // Read RSS feeds
         List<RSSFeed> rssFeedList = rssReader.readRss(urlArray, stopWords);
 
-        // Call method to count key-words appearances in an RSS feed
+        // Count occurrences of keywords in every RSS feed
         for (RSSFeed rssFeed : rssFeedList) {
            rssFeed.setWordCountMap(findHotTopics.countWordsInTitles(rssFeed.getListOfParsedTitles()));
         }
 
-        // Get a map of hot topics key-words and their number of appearances in given feeds
+        // Get a map of hot topics and their number of appearances
         HashMap<String, Integer> hotTopics = findHotTopics.findHotTopics(rssFeedList);
 
-
-        // Get news titles related to hot topics
+        // Map hot topics to news titles
         HashMap<String, List<String>> hotTopicsNews = findHotTopics.getRelatedNewsTitles(rssFeedList, hotTopics);
 
-        // Print the results
+        // Output the results
         OutputHandler.printResults(hotTopicsNews, hotTopics);
 
     }
@@ -46,8 +45,8 @@ public class FindHotTopics {
 
     private HashMap<String, Integer> findHotTopics(List<RSSFeed> rssFeedList) {
 
-        // Get union of RSS feed hash maps
-        HashMap<String, Integer> hotTopicsMap = hashMapUnion(rssFeedList);
+        // Get intersection of RSS feed hash maps
+        HashMap<String, Integer> hotTopicsMap = hashMapIntersection(rssFeedList);
 
         // Find the max occurrence value - hot topic occurrence value
         int maxValue = 0;
@@ -69,17 +68,18 @@ public class FindHotTopics {
     }
 
 
-    private HashMap<String, Integer> hashMapUnion(List<RSSFeed> rssFeedList) {
+    private HashMap<String, Integer> hashMapIntersection(List<RSSFeed> rssFeedList) {
 
-        HashMap<String, Integer> combinedHashMap = new HashMap<>();
+        HashMap<String, Integer> intersectionHashMap = new HashMap<>();
 
-        // Make a union of keyword hashmaps
+        // Make an intersection of hashmaps by mutual keywords
         for (RSSFeed rssFeed : rssFeedList) {
             for (Map.Entry<String, Integer> wordMap : rssFeed.getWordCountMap().entrySet()) {
+
                 String key = wordMap.getKey();
                 int value = wordMap.getValue();
 
-                // Check if word is present in all maps
+                // Check if keyword is present in all maps
                 boolean valueInAllMaps = true;
                 for (RSSFeed allMaps : rssFeedList) {
                     if (!allMaps.getWordCountMap().containsKey(key)) {
@@ -87,19 +87,19 @@ public class FindHotTopics {
                         break;
                     }
                 }
-                // We are adding a new element to the combined Map only if it's present in all given feeds
-                // If key already in map increment the value of the key
-                // Else put the key in map
-                if (combinedHashMap.containsKey(key) && valueInAllMaps) {
-                    combinedHashMap.put(key, combinedHashMap.get(key) + value);
+                // We are adding a new element to the intersected map only if it's present in all given feeds
+                // If key already in map, increment the value of the key
+                // Else, put the key in map
+                if (intersectionHashMap.containsKey(key) && valueInAllMaps) {
+                    intersectionHashMap.put(key, intersectionHashMap.get(key) + value);
                 } else {
                     if (valueInAllMaps)
-                        combinedHashMap.put(key, value);
+                        intersectionHashMap.put(key, value);
                 }
             }
         }
 
-        return combinedHashMap;
+        return intersectionHashMap;
     }
 
     private HashMap<String, Integer> countWordsInTitles(List<List<String>> titles) {
@@ -122,18 +122,20 @@ public class FindHotTopics {
         // Check hot topics against all titles from every feed and map them
         for (RSSFeed rssFeed : rssFeedList) {
             rssFeed.getListOfNewsTitles().forEach(title -> {
+
                 for (Map.Entry<String, Integer> entry : hotTopics.entrySet()) {
+
                     String key = entry.getKey();
                     String lowerCaseTitle = title.toLowerCase();
 
                     // Split title string into a list and check if the hot topic is contained in the title
                     List<String> titleList = Arrays.stream(lowerCaseTitle.replaceAll(REGEX_REMOVE, "")
+                                    .trim()
                                     .split(" "))
                             .collect(Collectors.toList());
                     boolean contains = titleList.stream().anyMatch(word -> word.equals(key));
                     if (contains) {
-                        List<String> list;
-                        list = hotTopicNewsTitles.containsKey(key) ? hotTopicNewsTitles.get(key) : new ArrayList<>();
+                        List<String> list = hotTopicNewsTitles.containsKey(key) ? hotTopicNewsTitles.get(key) : new ArrayList<>();
                         list.add(title);
                         hotTopicNewsTitles.put(key, list);
                     }

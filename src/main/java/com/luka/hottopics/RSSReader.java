@@ -23,7 +23,6 @@ public class RSSReader {
         // List of RSS feed objects
         List<RSSFeed> rssFeedList = new ArrayList<>();
 
-
         // Iterate given RSS URL's and save their respective news
         for (String source : urlArray) {
             URL feedURL = new URL(source);
@@ -35,6 +34,7 @@ public class RSSReader {
 
             // Parse feed entries
             for (Object o : feed.getEntries()) {
+
                 SyndEntry syndEntry = (SyndEntry) o;
 
                 // Add original title in our rss feed titles list
@@ -51,7 +51,7 @@ public class RSSReader {
                 listOfParsedTitles.add(parsedTitle);
             }
 
-            // Fill our RSS feeds collection
+            // Set values and add to collection
             rssFeed.setListOfNewsTitles(listOfNewsTitles);
             rssFeed.setListOfParsedTitles(listOfParsedTitles);
             rssFeedList.add(rssFeed);
