@@ -17,5 +17,9 @@ public class OutputHandler {
             }
             System.out.println();
         }
+
+        if(hotTopics.isEmpty())
+            System.out.println("There are no hot topics between these RSS feeds!");
+        
     }
 }
