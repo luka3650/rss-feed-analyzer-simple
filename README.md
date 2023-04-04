@@ -16,7 +16,7 @@ A hot topic analyzer was implemented that takes in at least two RSS URL's as an 
 # Results
 
 An example of running the program with two RSS feeds from [cnn](https://edition.cnn.com/services/rss/) site with [link](http://rss.cnn.com/rss/edition_us.rss) and [link](http://rss.cnn.com/rss/edition.rss):
-
+```
 Hot topic: { fire } , Count: 4
 ---------Related titles---------
 French minister under fire for Playboy magazine cover
@@ -30,6 +30,6 @@ The former president is expected to turn himself in to law enforcement Tuesday a
 Trump to appear in court and be charged in historic moment
 Supreme Court won't review conviction of man sentenced to die for role in escape
 
-
+```
 
 
