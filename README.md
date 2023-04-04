@@ -7,9 +7,9 @@ A hot topic analyzer was implemented that takes in at least two RSS URL's as an 
 1. Clone the the repository and position yourself in the root directory.
 2. Run the bash script for running the app:
 
-...
+'''
 ./run.sh
-...
+'''
 
 3. After running the script URL's should be inputed separated by spaces.
 
