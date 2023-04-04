@@ -48,7 +48,6 @@ public class RSSReader {
 
                 // Remove all stop words (words that don't add important information)
                 parsedTitle.removeAll(stopWords);
-
                 listOfParsedTitles.add(parsedTitle);
             }
 

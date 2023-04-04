@@ -72,6 +72,8 @@ public class FindHotTopics {
     private HashMap<String, Integer> hashMapUnion(List<RSSFeed> rssFeedList) {
 
         HashMap<String, Integer> combinedHashMap = new HashMap<>();
+
+        // Make a union of keyword hashmaps
         for (RSSFeed rssFeed : rssFeedList) {
             for (Map.Entry<String, Integer> wordMap : rssFeed.getWordCountMap().entrySet()) {
                 String key = wordMap.getKey();
@@ -105,7 +107,6 @@ public class FindHotTopics {
         HashMap<String, Integer> wordCountMap = new HashMap<>();
         for (List<String> title : titles) {
             for (String word : title) {
-                // If given word is already in map return default value
                 int count = wordCountMap.getOrDefault(word, 0);
                 wordCountMap.put(word, count + 1);
             }
@@ -115,20 +116,20 @@ public class FindHotTopics {
     }
 
     private HashMap<String, List<String>> getRelatedNewsTitles(List<RSSFeed> rssFeedList, HashMap<String, Integer> hotTopics) {
+
         HashMap<String, List<String>> hotTopicNewsTitles = new HashMap<>();
 
-        // Map hot topics to news titles
+        // Check hot topics against all titles from every feed and map them
         for (RSSFeed rssFeed : rssFeedList) {
             rssFeed.getListOfNewsTitles().forEach(title -> {
                 for (Map.Entry<String, Integer> entry : hotTopics.entrySet()) {
                     String key = entry.getKey();
                     String lowerCaseTitle = title.toLowerCase();
 
-                    // Split title string into a list and check if the hot topic is equal to any words in the title
+                    // Split title string into a list and check if the hot topic is contained in the title
                     List<String> titleList = Arrays.stream(lowerCaseTitle.replaceAll(REGEX_REMOVE, "")
                                     .split(" "))
                             .collect(Collectors.toList());
-
                     boolean contains = titleList.stream().anyMatch(word -> word.equals(key));
                     if (contains) {
                         List<String> list;
