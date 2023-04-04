@@ -22,8 +22,7 @@ public class InputHandler {
         FileOutputStream fos = new FileOutputStream(FileDescriptor.out);
         PrintStream ps = new PrintStream(fos);
         ps.println("Enter RSS URL's separated with spaces: ");
-        ps.close();
-        
+
         // Read array of URL strings input
         Scanner scanner = new Scanner(System.in);
         String[] urlArray = scanner.nextLine().split(SPLIT_REGEX);
