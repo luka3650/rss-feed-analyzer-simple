@@ -1,92 +1,137 @@
 package com.luka.hottopics;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import com.sun.syndication.io.FeedException;
 
-public class FindHotTopics
-{
+import java.io.IOException;
+import java.util.*;
+import java.util.stream.Collectors;
 
+public class FindHotTopics {
 
-    public void findHotTopics(List<RSSFeed> rssFeedList)
-    {
-        Map<String, Integer> combinedHashMap = new HashMap<>();
+    private static final InputHandler inputHandler = new InputHandler();
+    private static final RSSReader rssReader = new RSSReader();
+    private static final LoadResources loadResources = new LoadResources();
+    private static final FindHotTopics findHotTopics = new FindHotTopics();
 
-        // Loop over all RSS feed hash maps and combine them into one
-        for(RSSFeed rssFeed : rssFeedList)
-        {
-            for(Map.Entry<String,Integer> wordMap : rssFeed.wordCountMap.entrySet())
-            {
-                String key = wordMap.getKey();
-                int value = wordMap.getValue();
-                // Check if the key is already in map, if it is increment the value of the key else put the key in map
-                if (combinedHashMap.containsKey(key)) {
-                    combinedHashMap.put(key, combinedHashMap.get(key) + value);
-                } else {
-                    combinedHashMap.put(key, value);
-                }
-            }
+    public static void run() throws FeedException, IOException {
+
+        // Process input from console
+        String[] urlArray = inputHandler.processInput();
+
+        // Load stop words that needed for parsing the rss feed news topics
+        List<String> stopWords = loadResources.loadStopWords();
+
+        // Read RSS feeds and parse for hot topics
+        List<RSSFeed> rssFeedList = rssReader.readRss(urlArray, stopWords);
+
+        // Call method to count key-words appearances in an RSS feed
+        for (RSSFeed rssFeed : rssFeedList) {
+            findHotTopics.countWordsInTitles(rssFeed.listOfParsedTitles, rssFeed.wordCountMap);
         }
 
-        System.out.println(combinedHashMap);
+        // Get a map of hot topics key-words and their number of appearances in given feeds
+        Map<String, Integer> hotTopics = findHotTopics.findHotTopics(rssFeedList);
 
 
-        // Make a hash map of keywords that are present in all RSS feeds, also get the maximum ocurrence number (hot topic occurrence)
-        Map<String,Integer> jointTopics = new HashMap<>();
+        // Get news titles related to hot topics
+        Map<String, List<String>> hotTopicsNews = findHotTopics.getRelatedNewsTitles(rssFeedList, hotTopics);
+
+        // Print the results
+        OutputHandler.printResults(hotTopicsNews, hotTopics);
+
+    }
+
+
+    private Map<String, Integer> findHotTopics(List<RSSFeed> rssFeedList) {
+
+        // Get union of RSS feed hash maps
+        Map<String, Integer> hotTopicsMap = hashMapUnion(rssFeedList);
+
+        // Find the max occurrence value - hot topic occurrence value
         int maxValue = 0;
-        for(Map.Entry<String,Integer> entry : combinedHashMap.entrySet())
-        {
-            String key = entry.getKey();
+        for (Map.Entry<String, Integer> entry : hotTopicsMap.entrySet()) {
             int value = entry.getValue();
-            if(value >= maxValue)
-            {
-                // check if current keyword is present in all maps
-                boolean valueInAllMaps = true;
-                for(RSSFeed rssFeed : rssFeedList) {
-                    if(!rssFeed.wordCountMap.containsKey(key))
-                    {
-                        valueInAllMaps = false;
-                        break;
-                    }
-                }
-
-                if(valueInAllMaps)
-                {
-                    jointTopics.put(key,value);
-                    maxValue = value;
-                }
+            if (value >= maxValue) {
+                maxValue = value;
             }
         }
 
-        System.out.println(jointTopics);
-
-        // Remove all other topics except the hot topics
-        Iterator<Map.Entry<String, Integer>> iterator = jointTopics.entrySet().iterator();
+        // Remove all other topics except the hot topics (topics with most occurrences)
+        Iterator<Map.Entry<String, Integer>> iterator = hotTopicsMap.entrySet().iterator();
         while (iterator.hasNext()) {
             if (iterator.next().getValue() < maxValue)
                 iterator.remove();
         }
 
-
-
-        System.out.println("Hot topics: " + jointTopics);
-
+        return hotTopicsMap;
     }
 
 
+    private Map<String, Integer> hashMapUnion(List<RSSFeed> rssFeedList) {
 
-    public void countWordsInTitles(List<List<String>> titles, Map<String, Integer> wordCountMap) {
+        Map<String, Integer> combinedHashMap = new HashMap<>();
+        for (RSSFeed rssFeed : rssFeedList) {
+            for (Map.Entry<String, Integer> wordMap : rssFeed.wordCountMap.entrySet()) {
+                String key = wordMap.getKey();
+                int value = wordMap.getValue();
 
-        for(List<String> title : titles)
-        {
-            for(String word : title)
-            {
-                // Check if given word is already in map, if not return default value
+                // Check if word is present in all maps
+                boolean valueInAllMaps = true;
+                for (RSSFeed allMaps : rssFeedList) {
+                    if (!allMaps.wordCountMap.containsKey(key)) {
+                        valueInAllMaps = false;
+                        break;
+                    }
+                }
+                // We are adding a new element to the combined Map only if it's present in all given feeds
+                // If key already in map increment the value of the key
+                // Else put the key in map
+                if (combinedHashMap.containsKey(key) && valueInAllMaps) {
+                    combinedHashMap.put(key, combinedHashMap.get(key) + value);
+                } else {
+                    if (valueInAllMaps)
+                        combinedHashMap.put(key, value);
+                }
+            }
+        }
+
+        return combinedHashMap;
+    }
+
+    private void countWordsInTitles(List<List<String>> titles, Map<String, Integer> wordCountMap) {
+
+        for (List<String> title : titles) {
+            for (String word : title) {
+                // If given word is already in map return default value
                 int count = wordCountMap.getOrDefault(word, 0);
                 wordCountMap.put(word, count + 1);
             }
         }
+    }
+
+    private Map<String, List<String>> getRelatedNewsTitles(List<RSSFeed> rssFeedList, Map<String, Integer> hotTopics) {
+        Map<String, List<String>> hotTopicNewsTitles = new HashMap<>();
+
+        // Map hot topics to news titles
+        for (RSSFeed rssFeed : rssFeedList) {
+            rssFeed.listOfNewsTitles.forEach(title -> {
+                for (Map.Entry<String, Integer> entry : hotTopics.entrySet()) {
+                    String key = entry.getKey();
+                    String lowerCaseTitle = title.toLowerCase();
+
+                    // Split title string into a list and check if the hot topic is equal to any words in the title
+                    List<String> titleList = Arrays.stream(lowerCaseTitle.split(" ")).collect(Collectors.toList());
+                    boolean contains = titleList.stream().anyMatch(word -> word.equals(key));
+                    if (contains) {
+                        List<String> list;
+                        list = hotTopicNewsTitles.containsKey(key) ? hotTopicNewsTitles.get(key) : new ArrayList<>();
+                        list.add(title);
+                        hotTopicNewsTitles.put(key, list);
+                    }
+                }
+            });
+        }
+        return hotTopicNewsTitles;
     }
 
 }

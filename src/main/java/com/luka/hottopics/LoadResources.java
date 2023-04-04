@@ -7,7 +7,7 @@ import java.util.Scanner;
 
 public class LoadResources {
 
-    public static String STOPWORDS_TARGET_FILE = "stopwords.txt";
+    private static final String STOPWORDS_TARGET_FILE = "stopwords.txt";
 
     // Read all stop words and store them into a List
     public List<String> loadStopWords() {
