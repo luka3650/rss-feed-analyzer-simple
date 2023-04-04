@@ -23,18 +23,21 @@ public class RSSReader {
         // List of RSS feed objects
         List<RSSFeed> rssFeedList = new ArrayList<>();
 
+
         // Iterate given RSS URL's and save their respective news
         for (String source : urlArray) {
             URL feedURL = new URL(source);
             SyndFeedInput input = new SyndFeedInput();
             SyndFeed feed = input.build(new XmlReader(feedURL));
             RSSFeed rssFeed = new RSSFeed();
+            List<List<String>> listOfParsedTitles = new ArrayList<>();
+            List<String> listOfNewsTitles = new ArrayList<>();
 
             for (Object o : feed.getEntries()) {
                 SyndEntry syndEntry = (SyndEntry) o;
 
                 // Add original title in our rss feed titles list
-                rssFeed.listOfNewsTitles.add(syndEntry.getTitle());
+                listOfNewsTitles.add(syndEntry.getTitle());
 
                 // Parse and clean up feed titles, store words into a list
                 List<String> parsedTitle = Stream.of(syndEntry.getTitle().toLowerCase()
@@ -44,12 +47,12 @@ public class RSSReader {
 
                 // Remove all stop words (words that don't add important information)
                 parsedTitle.removeAll(stopWords);
-                rssFeed.listOfParsedTitles.add(parsedTitle);
+                listOfParsedTitles.add(parsedTitle);
             }
 
-
-
             // Fill our RSS feeds collection
+            rssFeed.setListOfNewsTitles(listOfNewsTitles);
+            rssFeed.setListOfParsedTitles(listOfParsedTitles);
             rssFeedList.add(rssFeed);
         }
 
