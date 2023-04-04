@@ -1,29 +1,35 @@
-# Exercise
+# Application details
 
-Implement a hot topic analysis for RSS feeds in Java (any version).
+A hot topic analyzer was implemented that takes in at least two RSS URL's as an input. The app fetches given RSS feeds via URL's using external **rome** library. Program parses the titles from the fetched feeds and clears them of [stopwords](https://www.ranks.nl/stopwords) to eliminate words that give little to no information. Strings were also cleaned from number digits and various interpunction signs. As a result the app writes out hot topics (words with most appearances that are present in all given feeds) along with the number of occurrences and associated title news with that topic.
 
-## Specification
-Your application should be able to read array of strings (at least two RSS URLs) as input from command line.
+# Running the app
 
-### Workflow:
-When the RSS URLs are provided through command line entry, your code should do a HTTP request to fetch the RSS feeds.
-Your code should then analyse the entries in these feeds and find potential hot topics --> are there any overlaps between the news.
+1. Clone the the repository and position yourself in the root directory.
+2. Run the bash script for running the app:
 
-### Example:
-RSS Feed one contains following news:
-To Democrats, Donald Trump Is No Longer a Laughing Matter
-Burundi military sites attacked, 12 insurgents killed
-San Bernardino divers return to lake seeking electronic evidence
+...
+./run.sh
+...
 
-RSS Feed two contains following news:
-Attacks on Military Camps in Burundi Kill Eight
-Saudi Women to Vote for First Time
-Platini Dealt Further Blow in FIFA Presidency Bid
+3. After running the script URL's should be inputed separated by spaces.
 
-Your analysis should return that there are news related to Burundi in both feeds.
+# Results
 
-## Additional Information
-You are not limited to any additional framework.
+An example of running the program with two RSS feeds from [cnn](https://edition.cnn.com/services/rss/) site with [link](http://rss.cnn.com/rss/edition_us.rss) and [link](http://rss.cnn.com/rss/edition.rss):
 
-### Commiting
-You will provide your solution by forking this branch and sending us the link to you solution once you are finished with the assignment.
+Hot topic: { fire } , Count: 4
+---------Related titles---------
+French minister under fire for Playboy magazine cover
+Fire crews respond to fire at boarded up building
+UPS Semi-truck goes off bridge, catches fire
+
+Hot topic: { court } , Count: 4
+---------Related titles---------
+What to know about the Trump indictment on the eve of his court appearance
+The former president is expected to turn himself in to law enforcement Tuesday and face more than 30 criminal charges in a Manhattan court 
+Trump to appear in court and be charged in historic moment
+Supreme Court won't review conviction of man sentenced to die for role in escape
+
+
+
+
