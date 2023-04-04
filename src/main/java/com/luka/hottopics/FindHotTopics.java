@@ -8,6 +8,8 @@ import java.util.stream.Collectors;
 
 public class FindHotTopics {
 
+
+    private static final String REGEX_REMOVE = "[;,:\\.$?!%]";
     private static final InputHandler inputHandler = new InputHandler();
     private static final RSSReader rssReader = new RSSReader();
     private static final LoadResources loadResources = new LoadResources();
@@ -123,7 +125,10 @@ public class FindHotTopics {
                     String lowerCaseTitle = title.toLowerCase();
 
                     // Split title string into a list and check if the hot topic is equal to any words in the title
-                    List<String> titleList = Arrays.stream(lowerCaseTitle.split(" ")).collect(Collectors.toList());
+                    List<String> titleList = Arrays.stream(lowerCaseTitle.replaceAll(REGEX_REMOVE, "")
+                                    .split(" "))
+                            .collect(Collectors.toList());
+
                     boolean contains = titleList.stream().anyMatch(word -> word.equals(key));
                     if (contains) {
                         List<String> list;

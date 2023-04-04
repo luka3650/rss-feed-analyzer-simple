@@ -33,6 +33,7 @@ public class RSSReader {
             List<List<String>> listOfParsedTitles = new ArrayList<>();
             List<String> listOfNewsTitles = new ArrayList<>();
 
+            // Parse feed entries
             for (Object o : feed.getEntries()) {
                 SyndEntry syndEntry = (SyndEntry) o;
 
@@ -47,6 +48,7 @@ public class RSSReader {
 
                 // Remove all stop words (words that don't add important information)
                 parsedTitle.removeAll(stopWords);
+
                 listOfParsedTitles.add(parsedTitle);
             }
 
